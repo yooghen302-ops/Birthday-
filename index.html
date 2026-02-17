@@ -27,7 +27,7 @@ body {
 }
 
 /* INTRO */
-#introScreen {
+#introScreen, #passwordScreen {
     position: fixed;
     width: 100%;
     height: 100vh;
@@ -40,18 +40,7 @@ body {
     z-index: 10;
 }
 
-/* PASSWORD */
-#passwordScreen {
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100vh;
-    background: black;
-    color: gold;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
+#passwordScreen { display: none; }
 
 input {
     padding: 12px;
@@ -75,7 +64,7 @@ button {
 /* MAIN */
 #mainContent {
     display: none;
-    padding: 30px;
+    padding: 20px;
 }
 
 .glow-name {
@@ -92,33 +81,45 @@ button {
 
 #typedText {
     font-size: 20px;
-    max-width: 750px;
+    max-width: 800px;
     margin: 20px auto;
     min-height: 120px;
     color: white;
 }
 
-/* POPUP IMAGE */
-.carousel {
-    width: 90%;
-    max-width: 650px;
-    height: 420px;
-    margin: 40px auto;
-    overflow: hidden;
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(255,215,0,0.5);
+/* FULL POP ENVELOPE */
+.envelope {
+    width: 95vw;
+    max-width: 900px;
+    height: 70vh;
+    margin: 30px auto;
+    position: relative;
+    perspective: 1200px;
 }
 
 #popupImage {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    animation: pop 0.8s ease;
+    object-fit: contain;
+    border-radius: 25px;
+    box-shadow: 0 30px 80px rgba(255,215,0,0.6);
+    animation: envelopePop 1s ease;
+    background: black;
 }
 
-@keyframes pop {
-    0% { transform: scale(0.85); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+/* Envelope / Card Pop */
+@keyframes envelopePop {
+    0% {
+        transform: scale(0.6) rotateX(60deg);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.05) rotateX(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* CONFETTI */
@@ -182,8 +183,8 @@ button {
     <div class="glow-name">Sree</div>
     <div id="typedText"></div>
 
-    <!-- SINGLE POP IMAGE -->
-    <div class="carousel">
+    <!-- FULL ENVELOPE POP -->
+    <div class="envelope">
         <img id="popupImage" src="image1.jpg">
     </div>
 
@@ -194,15 +195,15 @@ button {
 
 <script>
 function showPassword(){
-    document.getElementById("introScreen").style.display="none";
-    document.getElementById("passwordScreen").style.display="flex";
+    introScreen.style.display="none";
+    passwordScreen.style.display="flex";
 }
 
 function checkPassword() {
-    if(document.getElementById("passwordInput").value === "18feb") {
-        document.getElementById("passwordScreen").style.display="none";
-        document.getElementById("mainContent").style.display="block";
-        document.getElementById("bgMusic").play();
+    if(passwordInput.value === "18feb") {
+        passwordScreen.style.display="none";
+        mainContent.style.display="block";
+        bgMusic.play();
         createConfetti();
         startFireworks();
         typeMessage();
@@ -226,7 +227,7 @@ function typeMessage(){
     let i=0;
     function typing(){
         if(i<message.length){
-            document.getElementById("typedText").innerHTML += message.charAt(i);
+            typedText.innerHTML += message.charAt(i);
             i++;
             setTimeout(typing,40);
         }
@@ -237,23 +238,23 @@ function typeMessage(){
 /* IMAGE POP SYSTEM */
 const images = [
     "image1.jpg",
-    "image2.heic",
-    "image3.PNG",
-    "image4.PNG",
+    "image2.jpg",
+    "image3.jpg",
+    "image4.jpg",
     "image5.jpg",
     "image6.jpg",
-    "image7.PNG"
+    "image7.jpg"
 ];
 
 let index = 0;
 function startImagePop(){
-    const img = document.getElementById("popupImage");
+    const img = popupImage;
     setInterval(()=>{
         index = (index + 1) % images.length;
         img.style.animation = "none";
         img.offsetHeight;
         img.src = images[index];
-        img.style.animation = "pop 0.8s ease";
+        img.style.animation = "envelopePop 1s ease";
     }, 4000);
 }
 
