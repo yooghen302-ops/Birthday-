@@ -26,7 +26,7 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-/* INTRO */
+/* INTRO & PASSWORD */
 #introScreen, #passwordScreen {
     position: fixed;
     width: 100%;
@@ -87,39 +87,57 @@ button {
     color: white;
 }
 
-/* FULL POP ENVELOPE */
-.envelope {
+/* ENVELOPES */
+.envelope-container {
     width: 95vw;
-    max-width: 900px;
-    height: 70vh;
+    max-width: 1000px;
     margin: 30px auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.envelope {
+    width: 130px;
+    height: 90px;
+    background: #ffd700;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    color: black;
+    font-size: 16px;
+    box-shadow: 0 10px 30px rgba(255,215,0,0.6);
     position: relative;
-    perspective: 1200px;
+    transition: transform 0.3s ease;
 }
 
-#popupImage {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 25px;
-    box-shadow: 0 30px 80px rgba(255,215,0,0.6);
-    animation: envelopePop 1s ease;
-    background: black;
+.envelope:hover {
+    transform: scale(1.1);
 }
 
-/* Envelope / Card Pop */
-@keyframes envelopePop {
-    0% {
-        transform: scale(0.6) rotateX(60deg);
-        opacity: 0;
-    }
-    60% {
-        transform: scale(1.05) rotateX(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1);
-    }
+/* POP IMAGE */
+.pop-image {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.6);
+    max-width: 90vw;
+    max-height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(255,215,0,0.8);
+    display: none;
+    animation: pop 0.5s ease forwards;
+    z-index: 20;
+}
+
+@keyframes pop {
+    0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+    60% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
 /* CONFETTI */
@@ -165,7 +183,6 @@ button {
 }
 </style>
 </head>
-
 <body>
 
 <div id="introScreen">
@@ -183,10 +200,18 @@ button {
     <div class="glow-name">Sree</div>
     <div id="typedText"></div>
 
-    <!-- FULL ENVELOPE POP -->
-    <div class="envelope">
-        <img id="popupImage" src="image1.jpg">
+    <!-- 7 clickable envelopes -->
+    <div class="envelope-container">
+        <div class="envelope" data-img="image1.jpg">Envelope 1</div>
+        <div class="envelope" data-img="image2.jpg">Envelope 2</div>
+        <div class="envelope" data-img="image3.jpg">Envelope 3</div>
+        <div class="envelope" data-img="image4.jpg">Envelope 4</div>
+        <div class="envelope" data-img="image5.jpg">Envelope 5</div>
+        <div class="envelope" data-img="image6.jpg">Envelope 6</div>
+        <div class="envelope" data-img="image7.jpg">Envelope 7</div>
     </div>
+
+    <img id="popImage" class="pop-image">
 
     <audio id="bgMusic" loop>
         <source src="birthday.mp3" type="audio/mpeg">
@@ -194,6 +219,15 @@ button {
 </div>
 
 <script>
+const introScreen = document.getElementById("introScreen");
+const passwordScreen = document.getElementById("passwordScreen");
+const mainContent = document.getElementById("mainContent");
+const passwordInput = document.getElementById("passwordInput");
+const bgMusic = document.getElementById("bgMusic");
+const typedText = document.getElementById("typedText");
+const envelopes = document.querySelectorAll(".envelope");
+const popImage = document.getElementById("popImage");
+
 function showPassword(){
     introScreen.style.display="none";
     passwordScreen.style.display="flex";
@@ -207,7 +241,7 @@ function checkPassword() {
         createConfetti();
         startFireworks();
         typeMessage();
-        startImagePop();
+        enableEnvelopes();
     } else {
         alert("Wrong password!");
     }
@@ -235,28 +269,24 @@ function typeMessage(){
     typing();
 }
 
-/* IMAGE POP SYSTEM */
-const images = [
-    "image1.jpg",
-    "image2.jpg",
-    "image3.jpg",
-    "image4.jpg",
-    "image5.jpg",
-    "image6.jpg",
-    "image7.jpg"
-];
-
-let index = 0;
-function startImagePop(){
-    const img = popupImage;
-    setInterval(()=>{
-        index = (index + 1) % images.length;
-        img.style.animation = "none";
-        img.offsetHeight;
-        img.src = images[index];
-        img.style.animation = "envelopePop 1s ease";
-    }, 4000);
+/* CLICK ENVELOPES */
+function enableEnvelopes(){
+    envelopes.forEach(env => {
+        env.addEventListener("click", ()=>{
+            const imgSrc = env.getAttribute("data-img");
+            popImage.src = imgSrc;
+            popImage.style.display = "block";
+            popImage.style.animation = "none";
+            popImage.offsetHeight; // reset animation
+            popImage.style.animation = "pop 0.5s ease forwards";
+        });
+    });
 }
+
+// Close popImage on click anywhere
+popImage.addEventListener("click", ()=>{
+    popImage.style.display = "none";
+});
 
 /* Confetti */
 function createConfetti(){
